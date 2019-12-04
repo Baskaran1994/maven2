@@ -1,0 +1,79 @@
+pipeline{
+    agent any
+    stages{
+        stage('Continuous Download'){
+            steps{
+			 script{
+			    try{
+						git 'https://github.com/Baskaran1994/Maven.git'
+					}
+				catch(Exception e1)
+				{
+				mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build failed', to: 'gogulkrish.k@gmail.com'
+				exit(1);
+				}
+            }
+        }
+		}
+        stage('Continuous Build'){
+            steps{
+			 script{
+			 try{
+					sh label: '' , script: 'mvn package'
+            }
+			catch(Exception e2)
+			{
+			mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build failed', to: 'gogulkrish.k3@gmail.com'
+			exit(1);
+			}
+			}
+        }
+		}
+        stage('Continuous Deployment'){
+            steps{
+			 script{
+			  try{
+					sh label: '' , script: 'scp /home/ec2-user/.jenkins/workspace/Declarative-pipeline/webapp/target/webapp.war  ec2-user@172.31.42.22:/var/lib/tomcat/webapps/testwebapp.war'
+            }
+				catch(Exception e3)
+				{
+				mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build failed', to: 'gogulkrish.k34@gmail.com'
+				exit(1);
+				}
+        }
+	}
+}
+		
+        stage('Continuous Testing'){
+            steps{
+			 script{
+				try{
+					sh label: '' , script: 'echo "Test Passes"'
+            }
+			catch(Exception e4)
+			{
+			mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build failed', to: 'gogulkrish.k35@gmail.com'
+			exit(1);
+			}
+        }
+        
+    }
+}
+		stage('Continuous Delivery')
+		{
+		  steps{
+		   script{
+		    try{
+			  sh label: '' , script: 'scp /home/ec2-user/.jenkins/workspace/Declarative-pipeline/webapp/target/webapp.war  ec2-user@172.31.7.27:/var/lib/tomcat/webapps/prodwebapp.war'
+			  }
+			 catch(Exception e5)
+			 {
+			 mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build failed', to: 'gogulkrish.k35@gmail.com'
+			 }
+			}
+		}
+	}
+	
+}
+
+}
